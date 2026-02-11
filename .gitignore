@@ -17,6 +17,7 @@ logs
 .DS_Store
 .fleet
 .idea
+data/price-offers.json
 
 # Local env files
 .env
