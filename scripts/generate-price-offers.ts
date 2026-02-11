@@ -36,7 +36,7 @@ function pickDestination(origin: string): string {
 function makeOffer(): PriceOffer {
 	const origin = faker.helpers.arrayElement(AIRPORTS);
 	const destination = pickDestination(origin);
-	const departureDate = faker.date.soon({ days: 180 });
+	const departureDate = faker.date.soon({ days: 30 });
 	const returnDate = faker.date.soon({ days: 14, refDate: departureDate });
 
 	return {
