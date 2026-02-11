@@ -1,6 +1,14 @@
-<template>
-	<NuxtRouteAnnouncer />
+<script setup lang="ts">
+const {
+	data: offers,
+	pending,
+	error,
+} = await useFetch<PriceOffer[]>("/api/price-offers", {
+	default: () => [],
+});
+</script>
 
+<template>
 	<h1>Price Offers</h1>
 
 	<p v-if="pending">Loading offers...</p>
@@ -15,13 +23,3 @@
 		</li>
 	</ul>
 </template>
-
-<script setup lang="ts">
-const {
-	data: offers,
-	pending,
-	error,
-} = await useFetch<PriceOffer[]>("/api/price-offers", {
-	default: () => [],
-});
-</script>
