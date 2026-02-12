@@ -1,2 +1,11 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+:root {
+	--eurowings-magenta: #b4175e;
+}
+
+@theme {
+	--color-eurowings-magenta: oklch(from var(--eurowings-magenta) l c h);
+	--color-primary: var(--color-eurowings-magenta);
+}
