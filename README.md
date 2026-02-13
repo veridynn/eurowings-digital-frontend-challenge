@@ -7,8 +7,8 @@ display flight offers with client-side origin and destination filtering.
 ## 📋 Challenge Checklist
 
 - [x] Create a simple mock HTTP endpoint returning static PriceOffer JSON data
-- [ ] Build a mobile-first Vue application that fetches and displays all offers
-- [ ] Implement client-side filtering by origin and destination
+- [ ] Build a mobile-first application that fetches and displays all flights
+- [ ] Implement client-side filtering by origin, destination, departureDate, and returnDate
 - [ ] Ensure accessibility using semantic HTML and proper form labeling
 - [ ] Add basic automated tests for filtering logic and main component rendering
 
