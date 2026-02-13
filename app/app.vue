@@ -10,7 +10,7 @@ const {
 const formatDateShort = (dateValue: string) => {
 	const date = new Date(dateValue);
 
-	return new Intl.DateTimeFormat(navigator.language, {
+	return new Intl.DateTimeFormat("de-DE", {
 		month: "short",
 		day: "2-digit",
 	}).format(date);
@@ -28,7 +28,7 @@ const getDurationInDays = (departureDate: string, returnDate: string) => {
 };
 
 const formatPrice = (amount: number, currency: string) =>
-	new Intl.NumberFormat(navigator.language, {
+	new Intl.NumberFormat("de-DE", {
 		style: "currency",
 		currency,
 	}).format(amount);
