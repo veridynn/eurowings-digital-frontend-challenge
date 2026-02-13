@@ -37,7 +37,7 @@ bun install
 ### Generate mock data
 
 ```bash
-bun run generate:offers
+bun run mockdata:flights
 ```
 
 ### Start local development
@@ -81,11 +81,11 @@ bun run generate
 Generate 50 mock PriceOffer records using Faker:
 
 ```bash
-bun run generate:offers
+bun run mockdata:flights
 ```
 
 > [!Note]
-> This writes JSON to `data/price-offers.json`, which is returned by `GET /api/price-offers`.
+> This writes JSON to `data/flights.json`, which is returned by `GET /api/flights`.
 
 [tech-stack-icons]: https://skillicons.dev/icons?i=vue,ts,nuxtjs,vite,nodejs,bun
 [eurowings-logo]: https://www.eurowings.com/favicon.ico

@@ -11,7 +11,6 @@ type PriceOffer = {
 		amount: number;
 		currency: "EUR";
 	};
-	offerType: "amadeusBestPrice";
 	uuid: string;
 };
 
@@ -49,7 +48,6 @@ function makeOffer(): PriceOffer {
 			amount: Number(faker.finance.amount({ min: 39, max: 349, dec: 2 })),
 			currency: "EUR",
 		},
-		offerType: "amadeusBestPrice",
 		uuid: faker.string.uuid(),
 	};
 }
@@ -57,7 +55,7 @@ function makeOffer(): PriceOffer {
 async function main() {
 	const count = 50;
 	const offers: PriceOffer[] = Array.from({ length: count }, makeOffer);
-	const output = "/data/price-offers.json";
+	const output = "/data/flights.json";
 
 	await $`mkdir -p ${`${process.cwd()}/data`}`;
 	await Bun.write(`${process.cwd()}${output}`, JSON.stringify(offers, null, 2));

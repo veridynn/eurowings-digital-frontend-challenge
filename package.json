@@ -6,7 +6,7 @@
 		"build": "nuxt build",
 		"dev": "nuxt dev",
 		"generate": "nuxt generate",
-		"generate:offers": "bun scripts/generate-price-offers.ts",
+		"mockdata:flights": "bun scripts/generate-flights.ts",
 		"preview": "nuxt preview",
 		"postinstall": "nuxt prepare"
 	},
