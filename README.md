@@ -7,11 +7,25 @@ display flights with client-side filtering.
 ## 📋 Challenge Checklist
 
 - [x] Create a simple mock HTTP endpoint returning static Flights JSON data
+  - [x] Script for generating mocked data
+  - [x] Serve the mocked data through an API
 - [x] Build a mobile-first application that fetches and displays all flights
+  - [x] Fetch flight data from the API
+  - [x] Display all returned flights in a structured list
+  - [x] Design a responsive layout from mobile screens up
+  - [x] Show loading and error states while fetching data
 - [x] Implement client-side filtering by origin, destination, departureDate,
   and returnDate
+  - [x] Add filter inputs for origin, destination, departure date, and return date
+  - [x] Implement client-side filtering
+  - [x] Show active filters
+  - [x] Add sorting options
+  - [x] Reset filters to show all flights again
 - [x] Ensure accessibility using semantic HTML and proper form labeling
-- [ ] Add basic automated tests for filtering logic and main component rendering
+- [x] Add basic automated tests for filtering logic and main component rendering
+  - [x] Unit tests to validate core functionality and filtering logic
+  - [x] Component tests to smoke-test basic rendering and key UI states
+  - [ ] End-to-end tests to verify the main user journey from data load to filtering results
 
 ## 🧰 Tech Stack
 
@@ -75,6 +89,26 @@ Generate a static version of the app:
 
 ```bash
 bun run generate
+```
+
+### Tests
+
+Run the automated tests:
+
+```bash
+bun run test
+```
+
+Run tests in watch mode:
+
+```bash
+bun run test:watch
+```
+
+Run tests with coverage:
+
+```bash
+bun run test:coverage
 ```
 
 ### Mock data
