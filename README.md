@@ -1,4 +1,4 @@
-# ![Eurowings][eurowings-logo] Eurowings Digital Frontend Challenge
+# ![Eurowings Digtial Logo][eurowings-digital-logo] Eurowings Digital Frontend Challenge
 
 This repository is structured as a working coding challenge submission and
 demonstrates a small web application that consumes a mocked Flights API to
@@ -89,4 +89,4 @@ bun run mockdata:flights
 > This writes JSON to `data/flights.json`, which is returned by `GET /api/flights`.
 
 [tech-stack-icons]: https://skillicons.dev/icons?i=vue,ts,nuxtjs,vite,nodejs,bun
-[eurowings-logo]: https://www.eurowings.com/favicon.ico
+[eurowings-digital-logo]: https://eurowings-digital.de/ewd-logo-small.svg
