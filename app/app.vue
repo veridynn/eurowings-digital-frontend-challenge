@@ -400,13 +400,7 @@ const formatPrice = (amount: number, currency: string) =>
 
 <template>
 	<UApp>
-		<UHeader :toggle="false" :ui="{ title: 'text-magenta' }">
-			<template #title>
-				<UIcon name="i-lucide-plane" class="size-7" />
-				<span>Fligthly</span>
-			</template>
-		</UHeader>
-
+		<Header />
 		<UMain class="bg-old-neutral-50">
 			<UContainer class="pt-6">
 				<UCard>
