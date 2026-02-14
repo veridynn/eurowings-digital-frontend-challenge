@@ -1,12 +1,12 @@
 # ![Eurowings][eurowings-logo] Eurowings Digital Frontend Challenge
 
 This repository is structured as a working coding challenge submission and
-demonstrates a small web application that consumes a mocked PriceOffer API to
+demonstrates a small web application that consumes a mocked Flights API to
 display flight offers with client-side origin and destination filtering.
 
 ## 📋 Challenge Checklist
 
-- [x] Create a simple mock HTTP endpoint returning static PriceOffer JSON data
+- [x] Create a simple mock HTTP endpoint returning static Flights JSON data
 - [ ] Build a mobile-first application that fetches and displays all flights
 - [ ] Implement client-side filtering by origin, destination, departureDate, and returnDate
 - [ ] Ensure accessibility using semantic HTML and proper form labeling
