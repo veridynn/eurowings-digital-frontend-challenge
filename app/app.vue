@@ -6,12 +6,13 @@ import {
 	type CalendarDate,
 } from "@internationalized/date";
 
-type FlightSortKey =
-	| "none"
-	| "price-asc"
-	| "price-desc";
+type FlightSortKey = "none" | "price-asc" | "price-desc";
 
-type ActiveFilterKey = "origin" | "destination" | "departureDate" | "returnDate";
+type ActiveFilterKey =
+	| "origin"
+	| "destination"
+	| "departureDate"
+	| "returnDate";
 
 const sortOptions: { label: string; value: FlightSortKey; icon: string }[] = [
 	{
@@ -163,7 +164,10 @@ const sortedFlights = computed(() => {
 		return items;
 	}
 
-	const comparators: Record<Exclude<FlightSortKey, "none">, (a: Flight, b: Flight) => number> = {
+	const comparators: Record<
+		Exclude<FlightSortKey, "none">,
+		(a: Flight, b: Flight) => number
+	> = {
 		"price-asc": (a, b) => a.price.amount - b.price.amount,
 		"price-desc": (a, b) => b.price.amount - a.price.amount,
 	};
@@ -396,6 +400,13 @@ const formatPrice = (amount: number, currency: string) =>
 
 <template>
 	<UApp>
+		<UHeader :toggle="false" :ui="{ title: 'text-magenta' }">
+			<template #title>
+				<UIcon name="i-lucide-plane" class="size-7" />
+				<span>Fligthly</span>
+			</template>
+		</UHeader>
+
 		<UMain class="bg-old-neutral-50">
 			<UContainer class="pt-6">
 				<UCard>
@@ -449,66 +460,66 @@ const formatPrice = (amount: number, currency: string) =>
 						</div>
 
 						<div class="flex flex-wrap gap-4">
-								<UInputDate
-									v-model="departureDateValue"
-									:min-value="todayDate"
-									:max-value="departureMaxDate"
+							<UInputDate
+								v-model="departureDateValue"
+								:min-value="todayDate"
+								:max-value="departureMaxDate"
 								granularity="day"
 								size="xl"
 								color="primary"
 								class="basis-3xs grow"
-								>
-									<template #leading>
-										<UPopover v-model:open="departureCalendarOpen">
-											<UButton
-												color="neutral"
-												variant="link"
+							>
+								<template #leading>
+									<UPopover v-model:open="departureCalendarOpen">
+										<UButton
+											color="neutral"
+											variant="link"
 											size="xl"
 											icon="i-lucide-calendar"
 											aria-label="Select outgoing flight date"
 											class="px-0"
 										/>
 
-											<template #content>
-												<UCalendar
-													v-model="departureDateValue"
-													@update:model-value="departureCalendarOpen = false"
-													:min-value="todayDate"
-													:max-value="departureMaxDate"
-													class="p-2"
+										<template #content>
+											<UCalendar
+												v-model="departureDateValue"
+												@update:model-value="departureCalendarOpen = false"
+												:min-value="todayDate"
+												:max-value="departureMaxDate"
+												class="p-2"
 											/>
 										</template>
 									</UPopover>
 								</template>
 							</UInputDate>
 
-								<UInputDate
-									v-model="returnDateValue"
+							<UInputDate
+								v-model="returnDateValue"
 								:min-value="returnMinDate"
 								:max-value="returnMaxDate"
 								granularity="day"
 								size="xl"
 								color="primary"
 								class="basis-3xs grow"
-								>
-									<template #leading>
-										<UPopover v-model:open="returnCalendarOpen">
-											<UButton
-												color="neutral"
-												variant="link"
+							>
+								<template #leading>
+									<UPopover v-model:open="returnCalendarOpen">
+										<UButton
+											color="neutral"
+											variant="link"
 											size="xl"
 											icon="i-lucide-calendar-plus"
 											aria-label="Select return flight date"
 											class="px-0"
 										/>
 
-											<template #content>
-												<UCalendar
-													v-model="returnDateValue"
-													@update:model-value="returnCalendarOpen = false"
-													:min-value="returnMinDate"
-													:max-value="returnMaxDate"
-													class="p-2"
+										<template #content>
+											<UCalendar
+												v-model="returnDateValue"
+												@update:model-value="returnCalendarOpen = false"
+												:min-value="returnMinDate"
+												:max-value="returnMaxDate"
+												class="p-2"
 											/>
 										</template>
 									</UPopover>
@@ -521,7 +532,7 @@ const formatPrice = (amount: number, currency: string) =>
 								class="basis-3xs shrink grow justify-center font-semibold"
 								:disabled="showOriginError"
 								:ui="{
-									base: 'bg-gradient-to-r from-eurowings-magenta to-eurowings-magenta-dark',
+									base: 'bg-gradient-to-r from-magenta to-magenta-dark',
 								}"
 							>
 								Filter flights
@@ -540,7 +551,9 @@ const formatPrice = (amount: number, currency: string) =>
 						<div class="min-w-0 w-full overflow-hidden sm:flex-1">
 							<div class="flex items-center gap-2">
 								<template v-if="activeFilterChips.length">
-									<div class="min-w-0 flex-1 overflow-x-auto whitespace-nowrap pb-1">
+									<div
+										class="min-w-0 flex-1 overflow-x-auto whitespace-nowrap pb-1"
+									>
 										<div class="flex items-center gap-2">
 											<UButton
 												v-for="chip in activeFilterChips"
@@ -569,7 +582,9 @@ const formatPrice = (amount: number, currency: string) =>
 									</UButton>
 								</template>
 
-								<p v-else class="text-sm text-old-neutral-700">No active filters</p>
+								<p v-else class="text-sm text-old-neutral-700">
+									No active filters
+								</p>
 							</div>
 						</div>
 
@@ -593,7 +608,7 @@ const formatPrice = (amount: number, currency: string) =>
 					<UIcon
 						v-if="pending"
 						name="i-lucide-loader-circle"
-						class="size-10 h-[calc(100vh-var(--ui-header-height))] animate-spin text-eurowings-magenta"
+						class="size-10 h-[calc(100vh-var(--ui-header-height))] animate-spin text-magenta"
 					/>
 
 					<p v-else-if="error" class="text-red-600">Failed to load data.</p>
@@ -685,11 +700,11 @@ const formatPrice = (amount: number, currency: string) =>
 								<div
 									v-if="flight.seatAvailability < 3"
 									class="-mx-4 -mb-4 bg-red-100 p-0.5 text-center text-sm leading-none text-red-700 sm:mt-1.5 sm:mx-0 sm:ml-auto sm:w-fit sm:rounded-full sm:px-2 sm:py-1"
-									>
-										Only {{ flight.seatAvailability }}
-										{{ flight.seatAvailability === 1 ? "seat" : "seats" }}
-										available
-									</div>
+								>
+									Only {{ flight.seatAvailability }}
+									{{ flight.seatAvailability === 1 ? "seat" : "seats" }}
+									available
+								</div>
 							</UCard>
 						</li>
 					</ul>

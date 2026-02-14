@@ -9,7 +9,7 @@ export default defineNuxtConfig({
 	},
 	app: {
 		head: {
-			title: "Eurowings Digital Frontend Challenge",
+			title: "Fligthly",
 			htmlAttrs: {
 				lang: "en",
 			},

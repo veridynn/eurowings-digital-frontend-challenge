@@ -2,15 +2,13 @@
 @import "@nuxt/ui";
 
 :root {
-	--eurowings-magenta: #b4175e;
+	--magenta: #b4175e;
 }
 
 @theme {
-	--color-eurowings-magenta: oklch(from var(--eurowings-magenta) l c h);
-	--color-eurowings-magenta-dark: oklch(
-		from var(--eurowings-magenta) calc(l - 0.1) c h
-	);
-	--color-primary: var(--color-eurowings-magenta);
+	--color-magenta: oklch(from var(--magenta) l c h);
+	--color-magenta-dark: oklch(from var(--magenta) calc(l - 0.1) c h);
+	--color-primary: var(--color-magenta);
 
 	/* NOTE: error animation */
 	--animate-shake: shake 0.2s ease-in-out 0s 2;
