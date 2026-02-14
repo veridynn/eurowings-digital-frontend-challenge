@@ -47,17 +47,30 @@ const {
 			</div>
 		</div>
 
-		<USelect
-			v-model="selectedSort"
-			:items="sortOptions"
-			size="sm"
-			color="primary"
-			variant="outline"
+		<UFormField
+			label="Sort flights"
+			name="sort"
+			:ui="{
+				label: 'sr-only',
+				container: 'w-full',
+			}"
 			class="w-full sm:w-40 sm:shrink-0"
 		>
-			<template #leading>
-				<UIcon v-if="selectedSortOption?.icon" :name="selectedSortOption.icon" />
-			</template>
-		</USelect>
+			<USelect
+				id="sort-flights"
+				v-model="selectedSort"
+				:items="sortOptions"
+				name="sort"
+				aria-label="Sort flights"
+				size="sm"
+				color="primary"
+				variant="outline"
+				class="w-full"
+			>
+				<template #leading>
+					<UIcon v-if="selectedSortOption?.icon" :name="selectedSortOption.icon" />
+				</template>
+			</USelect>
+		</UFormField>
 	</div>
 </template>
