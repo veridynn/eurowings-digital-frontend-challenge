@@ -8,7 +8,8 @@ display flights with client-side filtering.
 
 - [x] Create a simple mock HTTP endpoint returning static Flights JSON data
 - [x] Build a mobile-first application that fetches and displays all flights
-- [x] Implement client-side filtering by origin, destination, departureDate, and returnDate
+- [x] Implement client-side filtering by origin, destination, departureDate,
+  and returnDate
 - [x] Ensure accessibility using semantic HTML and proper form labeling
 - [ ] Add basic automated tests for filtering logic and main component rendering
 
