@@ -6,6 +6,31 @@ import {
 	type CalendarDate,
 } from "@internationalized/date";
 
+type FlightSortKey =
+	| "none"
+	| "price-asc"
+	| "price-desc";
+
+type ActiveFilterKey = "origin" | "destination" | "departureDate" | "returnDate";
+
+const sortOptions: { label: string; value: FlightSortKey; icon: string }[] = [
+	{
+		label: "Default order",
+		value: "none",
+		icon: "i-lucide-arrow-up-down",
+	},
+	{
+		label: "Price: Low to High",
+		value: "price-asc",
+		icon: "i-lucide-arrow-down-narrow-wide",
+	},
+	{
+		label: "Price: High to Low",
+		value: "price-desc",
+		icon: "i-lucide-arrow-up-wide-narrow",
+	},
+];
+
 const {
 	data: flights,
 	pending,
@@ -27,12 +52,15 @@ const appliedFilters = ref({
 	departureDate: "",
 	returnDate: "",
 });
+const selectedSort = ref<FlightSortKey>("none");
 
 const originSearchTerm = ref("");
 const destinationSearchTerm = ref("");
 const showOriginError = ref(false);
 const departureDateValue = shallowRef<CalendarDate | undefined>(undefined);
 const returnDateValue = shallowRef<CalendarDate | undefined>(undefined);
+const departureCalendarOpen = ref(false);
+const returnCalendarOpen = ref(false);
 
 const toIsoDate = (date: CalendarDate | undefined) =>
 	date ? date.toString() : "";
@@ -128,6 +156,37 @@ const filteredFlights = computed(() => {
 	});
 });
 
+const sortedFlights = computed(() => {
+	const items = [...filteredFlights.value];
+
+	if (selectedSort.value === "none") {
+		return items;
+	}
+
+	const comparators: Record<Exclude<FlightSortKey, "none">, (a: Flight, b: Flight) => number> = {
+		"price-asc": (a, b) => a.price.amount - b.price.amount,
+		"price-desc": (a, b) => b.price.amount - a.price.amount,
+	};
+
+	const compare = comparators[selectedSort.value];
+
+	items.sort((a, b) => {
+		const result = compare(a, b);
+
+		if (result !== 0) {
+			return result;
+		}
+
+		return a.uuid.localeCompare(b.uuid);
+	});
+
+	return items;
+});
+
+const selectedSortOption = computed(() =>
+	sortOptions.find((option) => option.value === selectedSort.value),
+);
+
 watch(
 	() => form.origin,
 	(origin) => {
@@ -220,8 +279,8 @@ const applyFilters = () => {
 	appliedFilters.value = {
 		origin: form.origin,
 		destination: form.destination,
-		departureDate: form.departureDate,
-		returnDate: form.returnDate,
+		departureDate: toIsoDate(departureDateValue.value),
+		returnDate: toIsoDate(returnDateValue.value),
 	};
 };
 
@@ -245,6 +304,34 @@ const resetFilters = () => {
 	returnDateValue.value = undefined;
 };
 
+const removeFilter = (key: ActiveFilterKey) => {
+	if (key === "origin") {
+		form.origin = undefined;
+		appliedFilters.value.origin = undefined;
+		originSearchTerm.value = "";
+		showOriginError.value = false;
+		return;
+	}
+
+	if (key === "destination") {
+		form.destination = undefined;
+		appliedFilters.value.destination = undefined;
+		destinationSearchTerm.value = "";
+		return;
+	}
+
+	if (key === "departureDate") {
+		form.departureDate = "";
+		appliedFilters.value.departureDate = "";
+		departureDateValue.value = undefined;
+		return;
+	}
+
+	form.returnDate = "";
+	appliedFilters.value.returnDate = "";
+	returnDateValue.value = undefined;
+};
+
 const formatDateShort = (dateValue: string) => {
 	const date = new Date(dateValue);
 
@@ -253,6 +340,41 @@ const formatDateShort = (dateValue: string) => {
 		day: "2-digit",
 	}).format(date);
 };
+
+const activeFilterChips = computed(() => {
+	const chips: { key: ActiveFilterKey; label: string }[] = [];
+	const filters = appliedFilters.value;
+
+	if (filters.origin) {
+		chips.push({
+			key: "origin",
+			label: `From: ${filters.origin}`,
+		});
+	}
+
+	if (filters.destination) {
+		chips.push({
+			key: "destination",
+			label: `To: ${filters.destination}`,
+		});
+	}
+
+	if (filters.departureDate) {
+		chips.push({
+			key: "departureDate",
+			label: `Depart: ${formatDateShort(filters.departureDate)}`,
+		});
+	}
+
+	if (filters.returnDate) {
+		chips.push({
+			key: "returnDate",
+			label: `Return: ${formatDateShort(filters.returnDate)}`,
+		});
+	}
+
+	return chips;
+});
 
 const getDurationInDays = (departureDate: string, returnDate: string) => {
 	const departure = new Date(departureDate);
@@ -327,64 +449,66 @@ const formatPrice = (amount: number, currency: string) =>
 						</div>
 
 						<div class="flex flex-wrap gap-4">
-							<UInputDate
-								v-model="departureDateValue"
-								:min-value="todayDate"
-								:max-value="departureMaxDate"
+								<UInputDate
+									v-model="departureDateValue"
+									:min-value="todayDate"
+									:max-value="departureMaxDate"
 								granularity="day"
 								size="xl"
 								color="primary"
 								class="basis-3xs grow"
-							>
-								<template #leading>
-									<UPopover>
-										<UButton
-											color="neutral"
-											variant="link"
+								>
+									<template #leading>
+										<UPopover v-model:open="departureCalendarOpen">
+											<UButton
+												color="neutral"
+												variant="link"
 											size="xl"
 											icon="i-lucide-calendar"
 											aria-label="Select outgoing flight date"
 											class="px-0"
 										/>
 
-										<template #content>
-											<UCalendar
-												v-model="departureDateValue"
-												:min-value="todayDate"
-												:max-value="departureMaxDate"
-												class="p-2"
+											<template #content>
+												<UCalendar
+													v-model="departureDateValue"
+													@update:model-value="departureCalendarOpen = false"
+													:min-value="todayDate"
+													:max-value="departureMaxDate"
+													class="p-2"
 											/>
 										</template>
 									</UPopover>
 								</template>
 							</UInputDate>
 
-							<UInputDate
-								v-model="returnDateValue"
+								<UInputDate
+									v-model="returnDateValue"
 								:min-value="returnMinDate"
 								:max-value="returnMaxDate"
 								granularity="day"
 								size="xl"
 								color="primary"
 								class="basis-3xs grow"
-							>
-								<template #leading>
-									<UPopover>
-										<UButton
-											color="neutral"
-											variant="link"
+								>
+									<template #leading>
+										<UPopover v-model:open="returnCalendarOpen">
+											<UButton
+												color="neutral"
+												variant="link"
 											size="xl"
 											icon="i-lucide-calendar-plus"
 											aria-label="Select return flight date"
 											class="px-0"
 										/>
 
-										<template #content>
-											<UCalendar
-												v-model="returnDateValue"
-												:min-value="returnMinDate"
-												:max-value="returnMaxDate"
-												class="p-2"
+											<template #content>
+												<UCalendar
+													v-model="returnDateValue"
+													@update:model-value="returnCalendarOpen = false"
+													:min-value="returnMinDate"
+													:max-value="returnMaxDate"
+													class="p-2"
 											/>
 										</template>
 									</UPopover>
@@ -409,6 +533,63 @@ const formatPrice = (amount: number, currency: string) =>
 
 			<UContainer class="py-2.5">
 				<div class="mx-auto max-w-xl space-y-4 text-center">
+					<div
+						v-if="!pending"
+						class="flex flex-col gap-3 text-left sm:flex-row sm:items-center"
+					>
+						<div class="min-w-0 w-full overflow-hidden sm:flex-1">
+							<div class="flex items-center gap-2">
+								<template v-if="activeFilterChips.length">
+									<div class="min-w-0 flex-1 overflow-x-auto whitespace-nowrap pb-1">
+										<div class="flex items-center gap-2">
+											<UButton
+												v-for="chip in activeFilterChips"
+												:key="chip.key"
+												color="neutral"
+												variant="soft"
+												size="sm"
+												trailing-icon="i-lucide-x"
+												class="shrink-0 whitespace-nowrap"
+												@click="removeFilter(chip.key)"
+											>
+												{{ chip.label }}
+											</UButton>
+										</div>
+									</div>
+
+									<UButton
+										color="neutral"
+										variant="ghost"
+										size="sm"
+										icon="i-lucide-funnel-x"
+										class="shrink-0 whitespace-nowrap"
+										@click="resetFilters"
+									>
+										Clear all
+									</UButton>
+								</template>
+
+								<p v-else class="text-sm text-old-neutral-700">No active filters</p>
+							</div>
+						</div>
+
+						<USelect
+							v-model="selectedSort"
+							:items="sortOptions"
+							size="sm"
+							color="primary"
+							variant="outline"
+							class="w-full sm:w-40 sm:shrink-0"
+						>
+							<template #leading>
+								<UIcon
+									v-if="selectedSortOption?.icon"
+									:name="selectedSortOption.icon"
+								/>
+							</template>
+						</USelect>
+					</div>
+
 					<UIcon
 						v-if="pending"
 						name="i-lucide-loader-circle"
@@ -417,7 +598,7 @@ const formatPrice = (amount: number, currency: string) =>
 
 					<p v-else-if="error" class="text-red-600">Failed to load data.</p>
 
-					<div v-else-if="!filteredFlights.length" class="space-y-3">
+					<div v-else-if="!sortedFlights.length" class="space-y-3">
 						<UEmpty
 							size="xl"
 							variant="naked"
@@ -436,7 +617,7 @@ const formatPrice = (amount: number, currency: string) =>
 					</div>
 
 					<ul v-else class="space-y-4">
-						<li v-for="flight in filteredFlights" :key="flight.uuid">
+						<li v-for="flight in sortedFlights" :key="flight.uuid">
 							<UCard class="shadow-lg">
 								<div class="sm:flex sm:justify-between">
 									<div
@@ -504,11 +685,11 @@ const formatPrice = (amount: number, currency: string) =>
 								<div
 									v-if="flight.seatAvailability < 3"
 									class="-mx-4 -mb-4 bg-red-100 p-0.5 text-center text-sm leading-none text-red-700 sm:mt-1.5 sm:mx-0 sm:ml-auto sm:w-fit sm:rounded-full sm:px-2 sm:py-1"
-								>
-									Only {{ flight.seatAvailability }}
-									{{ flight.seatAvailability === 1 ? "seat" : "seats" }}
-									available
-								</div>
+									>
+										Only {{ flight.seatAvailability }}
+										{{ flight.seatAvailability === 1 ? "seat" : "seats" }}
+										available
+									</div>
 							</UCard>
 						</li>
 					</ul>
