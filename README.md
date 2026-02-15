@@ -1,4 +1,4 @@
-# ![Eurowings Digtial Logo][eurowings-digital-logo] Eurowings Digital Frontend Challenge
+# ![Eurowings Digital Logo][eurowings-digital-logo] Eurowings Digital Frontend Challenge
 
 <!-- NOTE: made with https://app.screenhance.com/create?template=device-float -->
 
@@ -6,24 +6,20 @@
 
 [![Live Demo](https://img.shields.io/badge/Cloudflare%20Pages-Live%20Demo-0EA5E9?style=for-the-badge&logo=cloudflarepages&logoColor=white&labelColor=F38020)](https://eurowings-digital-frontend-challenge.weimer.pro/)
 
-This repository is structured as a working coding challenge submission and
+This repository is structured as a working coding challenge implementation and
 demonstrates a small web application that consumes a mocked Flights API to
 display flights with client-side filtering.
 
 ## 🧠 Approach
 
-This challenge was used as an opportunity to explore newer tools in a practical
-context while still delivering a complete solution. To support that, `Nuxt 4`
-was selected to explore the latest Nuxt ecosystem in a real implementation.
-With `Nuxt UI 4`, the focus stayed on functionality rather than building UI
-primitives from scratch. `Tailwind CSS 4` complemented that setup by adding
-hands-on experience with a widely adopted styling approach. Some design freedom
-was also taken due to personal direction and the constraints of component-driven
-UI, since reproducing a PDF reference 1:1 was not the main objective. For state
-management, `Pinia` was intentionally skipped in favor of shareable URL-based
-state, which fits filter-driven flows well. The interface was built mobile-first
-and only expanded with breakpoints where they added clear value, while fluid
-Flexbox layouts kept the UI responsive without brittle breakpoint-heavy CSS.
+This solution uses `Nuxt 4`, `Nuxt UI 4`, and `Tailwind CSS 4` to deliver a
+complete challenge implementation while staying focused on functionality over
+custom UI primitives. The stack was chosen deliberately to explore and learn
+modern tools through practical, production-like usage. Filter state is
+URL-driven (instead of `Pinia`) to keep results shareable and persistent. The
+interface is built mobile-first with fluid `Flexbox` layouts and only uses
+breakpoints where they clearly improve usability. Some design freedom was
+intentionally taken rather than reproducing the PDF reference 1:1.
 
 ## 📋 Challenge Checklist
 
@@ -68,27 +64,53 @@ Flexbox layouts kept the UI responsive without brittle breakpoint-heavy CSS.
 - `Playwright`
 - `Cloudflare Pages`
 
-## 🪄 Setup
+## 🚀 Quick Start
 
 > [!IMPORTANT]
-> Requires Bun `≥ 1.3.9` and Node.js ≥ `24.13.1` installed.
-
-### Install dependencies
+> Requires Bun `≥ 1.3.9` and Node.js `≥ 22` (LTS).
 
 ```bash
 bun install
-```
-
-### Generate mock data
-
-```bash
 bun run mockdata:flights
+bun run dev
 ```
 
-### Start local development
+## 🗂️ Project Structure
 
-```bash
-bun run dev
+```text
+.
+├── app/                      # Nuxt app (pages, components, composables)
+├── data/
+│   └── flights.json          # Generated mock flight data
+├── scripts/
+│   └── generate-flights.ts   # Mock data generator script
+├── server/
+│   └── api/
+│       └── flights.get.ts    # GET /api/flights
+└── tests/                    # Unit, component, and e2e tests
+```
+
+## 🔌 API Contract
+
+### `GET /api/flights`
+
+Returns an array of flight offers:
+
+```json
+[
+  {
+    "origin": "DUS",
+    "destination": "HAM",
+    "departureDate": "2026-03-03",
+    "returnDate": "2026-03-17",
+    "seatAvailability": 6,
+    "price": {
+      "amount": 326.71,
+      "currency": "EUR"
+    },
+    "uuid": "a9074e84-8e7b-463a-9a7b-fdd4f5b302e6"
+  }
+]
 ```
 
 ## 📜 Scripts
