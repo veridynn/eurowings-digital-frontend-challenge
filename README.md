@@ -24,10 +24,10 @@ display flights with client-side filtering.
   - [x] Display all returned flights in a structured list
   - [x] Design a responsive layout from mobile screens up
   - [x] Show loading and error states while fetching data
-- [x] Implement client-side filtering by origin, destination, departureDate,
-      and returnDate
-  - [x] Add filter inputs for origin, destination, departure date, and return date
-  - [x] Implement client-side filtering
+- [x] Implement client-side filtering
+  - [x] Add filter input form for origin, destination, departure date,
+        and return date
+  - [x] Apply selected filters to the displayed flight results
 - [x] Ensure accessibility using semantic HTML and proper form labeling
 - [x] Add basic automated tests for filtering logic and main component rendering
   - [x] Unit tests to validate core functionality and filtering logic
@@ -52,10 +52,10 @@ display flights with client-side filtering.
 - `Vite` (bundler)
 - `Node.js` (runtime)
 - `Bun` (scripts and package manager)
-- `Tailwind CSS` (styling)
-- `Vitest` (unit/component testing)
-- `Playwright` (e2e testing)
-- `Cloudflare Pages` (demo host)
+- `Tailwind CSS`
+- `Vitest`
+- `Playwright`
+- `Cloudflare Pages`
 
 ## 🪄 Setup
 
