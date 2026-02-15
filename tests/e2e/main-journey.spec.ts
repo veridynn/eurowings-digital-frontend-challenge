@@ -1,6 +1,12 @@
 import { expect, test } from "./fixtures/test";
 
-test("main journey: load -> filter -> reset -> sort", async ({ page }) => {
+test("main journey: load -> filter -> reset -> sort", async ({ page, request }) => {
+	const apiResponse = await request.get("/api/flights");
+	expect(apiResponse.ok()).toBe(true);
+	const apiFlights = await apiResponse.json();
+	expect(Array.isArray(apiFlights)).toBe(true);
+	expect(apiFlights.length).toBeGreaterThan(0);
+
 	await page.goto("/");
 
 	const flightRows = page.locator("ul.space-y-4 > li");

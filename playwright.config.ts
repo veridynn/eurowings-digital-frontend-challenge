@@ -6,8 +6,7 @@ export default defineConfig({
 		baseURL: "http://localhost:3000",
 	},
 	webServer: {
-		command:
-			"cp tests/e2e/fixtures/flights.json data/flights.json && bun run dev -- --port 3000",
+		command: "E2E_MOCK_API=true bun run dev -- --port 3000",
 		url: "http://localhost:3000",
 		reuseExistingServer: false,
 	},
