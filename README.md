@@ -44,7 +44,7 @@ display flights with client-side filtering.
 
 ## 🧰 Tech Stack
 
-![vue-ts-nuxtjs-vite-nodejs-bun-tailwind-vitest-playwright][tech-stack-icons]
+![vue-typescript-nuxtjs-vite-nodejs-bun-tailwind-vitest-playwright-cloudflare][tech-stack-icons]
 
 - `Vue 3`
 - `TypeScript`
@@ -52,6 +52,10 @@ display flights with client-side filtering.
 - `Vite` (bundler)
 - `Node.js` (runtime)
 - `Bun` (scripts and package manager)
+- `Tailwind CSS` (styling)
+- `Vitest` (unit/component testing)
+- `Playwright` (e2e testing)
+- `Cloudflare Pages` (demo host)
 
 ## 🪄 Setup
 
@@ -146,7 +150,7 @@ bun run test:e2e:headed
 
 ### Mock data
 
-Generate 50 mock PriceOffer records using Faker:
+Generate 50 mock Flight records using [Faker](https://fakerjs.dev/):
 
 ```bash
 bun run mockdata:flights
@@ -155,5 +159,7 @@ bun run mockdata:flights
 > [!Note]
 > This writes JSON to `data/flights.json`, which is returned by `GET /api/flights`.
 
-[tech-stack-icons]: https://go-skill-icons.vercel.app/api/icons?i=vue,ts,nuxtjs,vite,nodejs,bun,tailwind,vitest,playwright
+<!-- NOTE: source: https://github.com/LelouchFR/skill-icons -->
+
+[tech-stack-icons]: https://go-skill-icons.vercel.app/api/icons?i=vue,ts,nuxtjs,vite,nodejs,bun,tailwind,vitest,playwright,cloudflare
 [eurowings-digital-logo]: https://eurowings-digital.de/ewd-logo-small.svg
