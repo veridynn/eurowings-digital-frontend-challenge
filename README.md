@@ -4,6 +4,12 @@ This repository is structured as a working coding challenge submission and
 demonstrates a small web application that consumes a mocked Flights API to
 display flights with client-side filtering.
 
+## 📸 Screenshot
+
+<!-- NOTE: made with https://app.screenhance.com/create?template=device-float -->
+
+![Flightly showcase](docs/images/flightly-showcase.png)
+
 ## 🧠 Approach
 
 🚧 WIP 🚧
