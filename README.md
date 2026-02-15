@@ -1,14 +1,14 @@
 # ![Eurowings Digtial Logo][eurowings-digital-logo] Eurowings Digital Frontend Challenge
 
-This repository is structured as a working coding challenge submission and
-demonstrates a small web application that consumes a mocked Flights API to
-display flights with client-side filtering.
-
-## 📸 Screenshot
-
 <!-- NOTE: made with https://app.screenhance.com/create?template=device-float -->
 
 ![Flightly showcase](docs/images/flightly-showcase.png)
+
+[![Live Demo](https://img.shields.io/badge/Cloudflare%20Pages-Live%20Demo-0EA5E9?style=for-the-badge&logo=cloudflarepages&logoColor=white&labelColor=F38020)](https://eurowings-digital-frontend-challenge.weimer.pro/)
+
+This repository is structured as a working coding challenge submission and
+demonstrates a small web application that consumes a mocked Flights API to
+display flights with client-side filtering.
 
 ## 🧠 Approach
 
