@@ -28,9 +28,6 @@ display flights with client-side filtering.
       and returnDate
   - [x] Add filter inputs for origin, destination, departure date, and return date
   - [x] Implement client-side filtering
-  - [x] Show active filters
-  - [x] Add sorting options
-  - [x] Reset filters to show all flights again
 - [x] Ensure accessibility using semantic HTML and proper form labeling
 - [x] Add basic automated tests for filtering logic and main component rendering
   - [x] Unit tests to validate core functionality and filtering logic
@@ -40,7 +37,10 @@ display flights with client-side filtering.
 
 ## ✨ Extras
 
-🚧 WIP 🚧
+- [x] Flight results toolbar with active filters and sorting options
+- [x] Empty-results handling with clear state and reset action
+- [x] Mock data generation script for realistic Flight API
+- [x] [Live demo](https://eurowings-digital-frontend-challenge.weimer.pro/) deployment
 
 ## 🧰 Tech Stack
 
