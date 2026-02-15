@@ -1,9 +1,5 @@
-import { readFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import flightsData from "~~/data/flights.json";
 
-const dataFilePath = resolve(process.cwd(), "data/flights.json");
-
-export default defineEventHandler(async (): Promise<Flight[]> => {
-	const raw = await readFile(dataFilePath, "utf-8");
-	return JSON.parse(raw) as Flight[];
+export default defineEventHandler((): Flight[] => {
+	return flightsData as Flight[];
 });
