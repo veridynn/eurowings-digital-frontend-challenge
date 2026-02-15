@@ -15,23 +15,27 @@ const {
 	applyFilters,
 } = useFlightState();
 
-const hiddenFormLabelUi = {
-	label: "sr-only",
-};
-
 const inputDateUi = {
 	segment:
 		"text-old-neutral-900 data-placeholder:text-old-neutral-700 dark:data-placeholder:text-old-neutral-200",
 };
 
 const commitOriginFromInput = () => {
-	const value = originSearchTerm.value.trim();
+	const selectedValue = form.value.origin?.trim() ?? "";
+	const searchValue = originSearchTerm.value.trim();
+	const value = selectedValue || searchValue;
+
 	form.value.origin = value || undefined;
+	originSearchTerm.value = value;
 };
 
 const commitDestinationFromInput = () => {
-	const value = destinationSearchTerm.value.trim();
+	const selectedValue = form.value.destination?.trim() ?? "";
+	const searchValue = destinationSearchTerm.value.trim();
+	const value = selectedValue || searchValue;
+
 	form.value.destination = value || undefined;
+	destinationSearchTerm.value = value;
 };
 
 onMounted(() => {
@@ -73,12 +77,11 @@ onMounted(() => {
 				<legend class="sr-only">Flight search filters</legend>
 
 				<div class="flex flex-wrap gap-4">
-					<UFormField label="Departure airport" :ui="hiddenFormLabelUi" class="basis-3xs grow">
+					<UFormField label="Departure airport" class="basis-3xs grow">
 						<UInputMenu
 							id="filter-origin"
 							v-model="form.origin"
 							v-model:search-term="originSearchTerm"
-							@update:search-term="form.origin = $event || undefined"
 							:items="airports"
 							placeholder="Departure airport"
 							size="xl"
@@ -95,12 +98,11 @@ onMounted(() => {
 						/>
 					</UFormField>
 
-					<UFormField label="Destination airport" :ui="hiddenFormLabelUi" class="basis-3xs grow">
+					<UFormField label="Destination airport" class="basis-3xs grow">
 						<UInputMenu
 							id="filter-destination"
 							v-model="form.destination"
 							v-model:search-term="destinationSearchTerm"
-							@update:search-term="form.destination = $event || undefined"
 							:items="airports"
 							placeholder="Destination airport"
 							size="xl"
@@ -119,7 +121,7 @@ onMounted(() => {
 				</div>
 
 				<div class="flex flex-wrap gap-4">
-					<UFormField label="Departure date" name="departureDate" :ui="hiddenFormLabelUi" class="basis-3xs grow">
+					<UFormField label="Outgoing flight" name="departureDate" class="basis-3xs grow">
 						<UInputDate
 							id="filter-departure-date"
 							v-model="departureDateValue"
@@ -157,7 +159,7 @@ onMounted(() => {
 						</UInputDate>
 					</UFormField>
 
-					<UFormField label="Return date" name="returnDate" :ui="hiddenFormLabelUi" class="basis-3xs grow">
+					<UFormField label="Return flight" name="returnDate" class="basis-3xs grow">
 						<UInputDate
 							id="filter-return-date"
 							v-model="returnDateValue"

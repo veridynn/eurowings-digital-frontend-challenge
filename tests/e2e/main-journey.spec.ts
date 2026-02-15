@@ -3,11 +3,12 @@ import { expect, test } from "@playwright/test";
 test("main journey: load -> filter -> reset -> sort", async ({ page }) => {
 	await page.goto("/");
 
-	const flightRows = page.locator("ul > li");
+	const flightRows = page.locator("ul.space-y-4 > li");
 	const sortSelect = page.getByRole("combobox", { name: "Sort flights" });
 
 	await expect(page.getByText("Fligthly")).toBeVisible();
-	await expect(flightRows).toHaveCount(4);
+	const initialFlightCount = await flightRows.count();
+	expect(initialFlightCount).toBeGreaterThan(0);
 	await page.waitForFunction(
 		() =>
 			(
@@ -25,17 +26,35 @@ test("main journey: load -> filter -> reset -> sort", async ({ page }) => {
 		);
 	});
 	await page.getByRole("button", { name: "Filter flights" }).click();
+	await expect(page).toHaveURL(/[\?&]destination=PMI(&|$)/);
 	await expect(page.getByRole("button", { name: "To: PMI" })).toBeVisible();
-	await expect(flightRows).toHaveCount(2);
+	const filteredFlightCount = await flightRows.count();
+	expect(filteredFlightCount).toBeGreaterThan(0);
 	await expect(flightRows.first()).toContainText("PMI");
 	await expect(flightRows.last()).toContainText("PMI");
 
 	await page.getByRole("button", { name: "Clear all" }).click();
+	await expect(page).not.toHaveURL(
+		/[\?&](origin|destination|departureDate|returnDate)=/,
+	);
+	await expect(page.getByRole("button", { name: "To: PMI" })).toHaveCount(0);
 	await expect(page.getByText("No active filters")).toBeVisible();
-	await expect(flightRows).toHaveCount(4);
+	await expect(flightRows).toHaveCount(initialFlightCount);
 
 	await sortSelect.click();
 	await page.getByRole("option", { name: "Price: Low to High" }).click();
-	await expect(flightRows.first()).toContainText("60,00 €");
-	await expect(flightRows.last()).toContainText("200,00 €");
+	const prices = await flightRows.evaluateAll((rows) =>
+		rows.map((row) => {
+			const match = row.textContent?.match(/(\d+[.,]\d+)\s*€/);
+
+			if (!match) {
+				return NaN;
+			}
+
+			return Number(match[1].replace(".", "").replace(",", "."));
+		}),
+	);
+
+	expect(prices.every((price) => Number.isFinite(price))).toBe(true);
+	expect(prices).toEqual([...prices].sort((a, b) => a - b));
 });

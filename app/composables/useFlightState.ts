@@ -6,6 +6,12 @@ import {
 } from "@internationalized/date";
 import type { Ref } from "vue";
 import type {
+	LocationQuery,
+	LocationQueryRaw,
+	LocationQueryValue,
+	LocationQueryValueRaw,
+} from "vue-router";
+import type {
 	ActiveFilterKey,
 	AppliedFilters,
 	FilterForm,
@@ -32,7 +38,73 @@ const sortOptions: SortOption[] = [
 ];
 
 const toIsoDate = (date: CalendarDate | undefined) =>
-	date ? date.toString() : "";
+	date ? date.toString() : undefined;
+
+const isIsoDate = (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value);
+
+const parseIsoDate = (value: string | undefined) => {
+	if (!value || !isIsoDate(value)) {
+		return undefined;
+	}
+
+	try {
+		return parseDate(value);
+	} catch {
+		return undefined;
+	}
+};
+
+const getSingleQueryValue = (
+	value:
+		| LocationQueryValue
+		| LocationQueryValueRaw
+		| LocationQueryValue[]
+		| LocationQueryValueRaw[]
+		| undefined,
+) => {
+	const raw = Array.isArray(value) ? value[0] : value;
+
+	if (raw === null || raw === undefined) {
+		return undefined;
+	}
+
+	const trimmed = String(raw).trim();
+
+	return trimmed || undefined;
+};
+
+const getQueryFromFullPath = (fullPath: string) => {
+	const queryIndex = fullPath.indexOf("?");
+
+	if (queryIndex === -1) {
+		return {} as LocationQueryRaw;
+	}
+
+	const hashIndex = fullPath.indexOf("#", queryIndex);
+	const search = hashIndex === -1
+		? fullPath.slice(queryIndex + 1)
+		: fullPath.slice(queryIndex + 1, hashIndex);
+	const params = new URLSearchParams(search);
+	const query: LocationQueryRaw = {};
+
+	for (const [key, value] of params.entries()) {
+		const existing = query[key];
+
+		if (Array.isArray(existing)) {
+			existing.push(value);
+			continue;
+		}
+
+		if (existing !== undefined) {
+			query[key] = [existing, value];
+			continue;
+		}
+
+		query[key] = value;
+	}
+
+	return query;
+};
 
 const isDateOutsideBounds = (
 	date: CalendarDate,
@@ -59,8 +131,181 @@ const formatDateShort = (dateValue: string) => {
 	}).format(date);
 };
 
+const managedQueryKeys = [
+	"origin",
+	"destination",
+	"departureDate",
+	"returnDate",
+	"sort",
+] as const;
+
+type ManagedQueryKey = (typeof managedQueryKeys)[number];
+
+type ManagedQueryValues = {
+	origin?: string;
+	destination?: string;
+	departureDate: string;
+	returnDate: string;
+	sort: FlightSortKey;
+};
+
+const validSortValues = new Set<FlightSortKey>(["none", "price-asc", "price-desc"]);
+
+const getReturnMinDate = (
+	departureDate: CalendarDate | undefined,
+	todayDate: CalendarDate,
+) => {
+	if (!departureDate || departureDate.compare(todayDate) < 0) {
+		return todayDate;
+	}
+
+	return departureDate;
+};
+
+const sanitizeManagedQuery = (
+	query: LocationQuery | LocationQueryRaw,
+	todayDate: CalendarDate,
+	departureMaxDate: CalendarDate | undefined,
+	returnMaxDate: CalendarDate | undefined,
+): ManagedQueryValues => {
+	const origin = getSingleQueryValue(query.origin);
+	const destination = getSingleQueryValue(query.destination);
+	const rawSort = getSingleQueryValue(query.sort);
+	const sort = rawSort && validSortValues.has(rawSort as FlightSortKey)
+		? (rawSort as FlightSortKey)
+		: "none";
+	let departureDate = "";
+	let returnDate = "";
+
+	const parsedDepartureDate = parseIsoDate(getSingleQueryValue(query.departureDate));
+
+	if (
+		parsedDepartureDate &&
+		!isDateOutsideBounds(parsedDepartureDate, todayDate, departureMaxDate)
+	) {
+		departureDate = parsedDepartureDate.toString();
+	}
+
+	const parsedReturnDate = parseIsoDate(getSingleQueryValue(query.returnDate));
+	const returnMinDate = getReturnMinDate(
+		departureDate ? parseDate(departureDate) : undefined,
+		todayDate,
+	);
+
+	if (
+		parsedReturnDate &&
+		!isDateOutsideBounds(parsedReturnDate, returnMinDate, returnMaxDate)
+	) {
+		returnDate = parsedReturnDate.toString();
+	}
+
+	return {
+		origin,
+		destination,
+		departureDate,
+		returnDate,
+		sort,
+	};
+};
+
+const applyManagedValuesToQuery = (
+	query: LocationQuery | LocationQueryRaw,
+	values: ManagedQueryValues,
+) => {
+	const nextQuery: LocationQueryRaw = { ...query };
+
+	for (const key of managedQueryKeys) {
+		delete nextQuery[key];
+	}
+
+	if (values.origin) {
+		nextQuery.origin = values.origin;
+	}
+
+	if (values.destination) {
+		nextQuery.destination = values.destination;
+	}
+
+	if (values.departureDate) {
+		nextQuery.departureDate = values.departureDate;
+	}
+
+	if (values.returnDate) {
+		nextQuery.returnDate = values.returnDate;
+	}
+
+	if (values.sort !== "none") {
+		nextQuery.sort = values.sort;
+	}
+
+	return nextQuery;
+};
+
+const queryValuesMatch = (
+	left:
+		| LocationQueryValue
+		| LocationQueryValueRaw
+		| LocationQueryValue[]
+		| LocationQueryValueRaw[]
+		| undefined,
+	right:
+		| LocationQueryValue
+		| LocationQueryValueRaw
+		| LocationQueryValue[]
+		| LocationQueryValueRaw[]
+		| undefined,
+) => {
+	if (Array.isArray(left) || Array.isArray(right)) {
+		const leftValues = Array.isArray(left)
+			? left
+			: left === undefined || left === null
+				? []
+				: [left];
+		const rightValues = Array.isArray(right)
+			? right
+			: right === undefined || right === null
+				? []
+				: [right];
+
+		if (leftValues.length !== rightValues.length) {
+			return false;
+		}
+
+		return leftValues.every((value, index) => value === rightValues[index]);
+	}
+
+	return left === right;
+};
+
+const areQueriesEqual = (
+	left: LocationQueryRaw,
+	right: LocationQuery | LocationQueryRaw,
+) => {
+	const keys = new Set([...Object.keys(left), ...Object.keys(right)]);
+
+	for (const key of keys) {
+		if (
+			!queryValuesMatch(
+				left[key as string],
+				right[key as string] as
+					| LocationQueryValue
+					| LocationQueryValueRaw
+					| LocationQueryValue[]
+					| LocationQueryValueRaw[]
+					| undefined,
+			)
+		) {
+			return false;
+		}
+	}
+
+	return true;
+};
+
 export const useFlightState = (flights?: Ref<Flight[]>) => {
 	const flightsState = useState<Flight[]>("flight-state:flights", () => []);
+	const route = useRoute();
+	const router = useRouter();
 
 	if (flights) {
 		watch(
@@ -77,14 +322,6 @@ export const useFlightState = (flights?: Ref<Flight[]>) => {
 		destination: undefined,
 	}));
 
-	const appliedFilters = useState<AppliedFilters>("flight-state:applied-filters", () => ({
-		origin: undefined,
-		destination: undefined,
-		departureDate: "",
-		returnDate: "",
-	}));
-
-	const selectedSort = useState<FlightSortKey>("flight-state:selected-sort", () => "none");
 	const originSearchTerm = useState<string>("flight-state:origin-search-term", () => "");
 	const destinationSearchTerm = useState<string>(
 		"flight-state:destination-search-term",
@@ -100,21 +337,6 @@ export const useFlightState = (flights?: Ref<Flight[]>) => {
 		"flight-state:return-calendar-open",
 		() => false,
 	);
-
-	const departureDateValue = computed<CalendarDate | undefined>({
-		get: () =>
-			departureDateDraft.value ? parseDate(departureDateDraft.value) : undefined,
-		set: (date) => {
-			departureDateDraft.value = toIsoDate(date);
-		},
-	});
-
-	const returnDateValue = computed<CalendarDate | undefined>({
-		get: () => (returnDateDraft.value ? parseDate(returnDateDraft.value) : undefined),
-		set: (date) => {
-			returnDateDraft.value = toIsoDate(date);
-		},
-	});
 
 	const todayDate = computed(() => today(getLocalTimeZone()));
 
@@ -140,12 +362,97 @@ export const useFlightState = (flights?: Ref<Flight[]>) => {
 		getLatestDateFromFlights((flight) => flight.returnDate),
 	);
 
-	const returnMinDate = computed(() => {
-		const departureDate = departureDateValue.value ?? todayDate.value;
+	const getCurrentQuery = () => getQueryFromFullPath(route.fullPath);
 
-		return departureDate.compare(todayDate.value) < 0
-			? todayDate.value
-			: departureDate;
+	const managedQueryValues = computed(() =>
+		sanitizeManagedQuery(
+			getCurrentQuery(),
+			todayDate.value,
+			departureMaxDate.value,
+			returnMaxDate.value,
+		),
+	);
+
+	const updateQuery = (
+		patch: Partial<Record<ManagedQueryKey, string | FlightSortKey | undefined>>,
+	) => {
+		const currentQuery = getCurrentQuery();
+		const nextQuery: LocationQueryRaw = { ...currentQuery };
+
+		for (const key of managedQueryKeys) {
+			if (!(key in patch)) {
+				continue;
+			}
+
+			const value = patch[key];
+
+			if (key === "sort") {
+				if (!value || value === "none") {
+					delete nextQuery.sort;
+				} else {
+					nextQuery.sort = value;
+				}
+
+				continue;
+			}
+
+			const normalized = typeof value === "string" ? value.trim() : "";
+
+			if (normalized) {
+				nextQuery[key] = normalized;
+			} else {
+				delete nextQuery[key];
+			}
+		}
+
+		const sanitizedValues = sanitizeManagedQuery(
+			nextQuery,
+			todayDate.value,
+			departureMaxDate.value,
+			returnMaxDate.value,
+		);
+		const canonicalQuery = applyManagedValuesToQuery(nextQuery, sanitizedValues);
+		const isEqual = areQueriesEqual(canonicalQuery, currentQuery);
+
+		if (isEqual) {
+			return;
+		}
+
+		void router.replace({ query: canonicalQuery });
+	};
+
+	const appliedFilters = computed<AppliedFilters>(() => ({
+		origin: managedQueryValues.value.origin,
+		destination: managedQueryValues.value.destination,
+		departureDate: managedQueryValues.value.departureDate,
+		returnDate: managedQueryValues.value.returnDate,
+	}));
+
+	const selectedSort = computed<FlightSortKey>({
+		get: () => managedQueryValues.value.sort,
+		set: (value) => {
+			updateQuery({
+				sort: value,
+			});
+		},
+	});
+
+	const departureDateValue = computed<CalendarDate | undefined>({
+		get: () => parseIsoDate(departureDateDraft.value),
+		set: (date) => {
+			departureDateDraft.value = toIsoDate(date) ?? "";
+		},
+	});
+
+	const returnDateValue = computed<CalendarDate | undefined>({
+		get: () => parseIsoDate(returnDateDraft.value),
+		set: (date) => {
+			returnDateDraft.value = toIsoDate(date) ?? "";
+		},
+	});
+
+	const returnMinDate = computed(() => {
+		return getReturnMinDate(departureDateValue.value, todayDate.value);
 	});
 
 	const airports = computed(() => {
@@ -198,83 +505,114 @@ export const useFlightState = (flights?: Ref<Flight[]>) => {
 		return chips;
 	});
 
-	if (flights) {
-		watch(
-			() => form.value.origin,
-			(origin) => {
-				if (origin) {
-					return;
-				}
+	watch(
+		() => appliedFilters.value.origin,
+		(origin) => {
+			form.value.origin = origin;
+			originSearchTerm.value = origin ?? "";
+		},
+		{
+			immediate: true,
+		},
+	);
 
-				if (appliedFilters.value.origin) {
-					appliedFilters.value.origin = undefined;
-				}
+	watch(
+		() => appliedFilters.value.destination,
+		(destination) => {
+			form.value.destination = destination;
+			destinationSearchTerm.value = destination ?? "";
+		},
+		{
+			immediate: true,
+		},
+	);
 
-				originSearchTerm.value = "";
-			},
-		);
+	watch(
+		() => appliedFilters.value.departureDate,
+		(departureDate) => {
+			departureDateDraft.value = departureDate;
+		},
+		{
+			immediate: true,
+		},
+	);
 
-		watch(
-			() => form.value.destination,
-			(destination) => {
-				if (destination) {
-					return;
-				}
+	watch(
+		() => appliedFilters.value.returnDate,
+		(returnDate) => {
+			returnDateDraft.value = returnDate;
+		},
+		{
+			immediate: true,
+		},
+	);
 
-				if (appliedFilters.value.destination) {
-					appliedFilters.value.destination = undefined;
-				}
+	watch(departureDateValue, () => {
+		if (
+			returnDateValue.value &&
+			isDateOutsideBounds(
+				returnDateValue.value,
+				returnMinDate.value,
+				returnMaxDate.value,
+			)
+		) {
+			returnDateValue.value = undefined;
+		}
+	});
 
-				destinationSearchTerm.value = "";
-			},
-		);
+	watch(returnDateValue, (returnDate) => {
+		if (
+			returnDate &&
+			isDateOutsideBounds(returnDate, returnMinDate.value, returnMaxDate.value)
+		) {
+			returnDateValue.value = undefined;
+		}
+	});
 
-		watch(departureDateValue, () => {
+	watch(
+		[todayDate, departureMaxDate, returnMaxDate, returnMinDate],
+		() => {
+			const departureDate = departureDateValue.value;
+
 			if (
-				returnDateValue.value &&
+				departureDate &&
 				isDateOutsideBounds(
-					returnDateValue.value,
-					returnMinDate.value,
-					returnMaxDate.value,
+					departureDate,
+					todayDate.value,
+					departureMaxDate.value,
 				)
 			) {
-				returnDateValue.value = undefined;
+				departureDateValue.value = undefined;
 			}
-		});
 
-		watch(returnDateValue, (returnDate) => {
+			const returnDate = returnDateValue.value;
+
 			if (
 				returnDate &&
 				isDateOutsideBounds(returnDate, returnMinDate.value, returnMaxDate.value)
 			) {
 				returnDateValue.value = undefined;
 			}
-		});
+		},
+		{
+			immediate: true,
+		},
+	);
 
+	if (import.meta.client) {
 		watch(
-			[todayDate, departureMaxDate, returnMaxDate, returnMinDate],
-			() => {
-				const departureDate = departureDateValue.value;
+			managedQueryValues,
+			(values) => {
+				const currentQuery = getCurrentQuery();
+				const canonicalQuery = applyManagedValuesToQuery(currentQuery, values);
 
-				if (
-					departureDate &&
-					isDateOutsideBounds(
-						departureDate,
-						todayDate.value,
-						departureMaxDate.value,
-					)
-				) {
-					departureDateValue.value = undefined;
+				if (areQueriesEqual(canonicalQuery, currentQuery)) {
+					return;
 				}
 
-				const returnDate = returnDateValue.value;
-
-				if (
-					returnDate &&
-					isDateOutsideBounds(returnDate, returnMinDate.value, returnMaxDate.value)
-				) {
-					returnDateValue.value = undefined;
-				}
+				void router.replace({
+					query: canonicalQuery,
+				});
 			},
 			{
 				immediate: true,
@@ -283,54 +621,58 @@ export const useFlightState = (flights?: Ref<Flight[]>) => {
 	}
 
 	const applyFilters = () => {
-		appliedFilters.value = {
+		updateQuery({
 			origin: form.value.origin,
 			destination: form.value.destination,
 			departureDate: departureDateDraft.value,
 			returnDate: returnDateDraft.value,
-		};
+		});
 	};
 
 	const resetFilters = () => {
 		form.value.origin = undefined;
 		form.value.destination = undefined;
 
-		appliedFilters.value = {
-			origin: undefined,
-			destination: undefined,
-			departureDate: "",
-			returnDate: "",
-		};
-
 		originSearchTerm.value = "";
 		destinationSearchTerm.value = "";
-		departureDateValue.value = undefined;
-		returnDateValue.value = undefined;
+
+		updateQuery({
+			origin: undefined,
+			destination: undefined,
+			departureDate: undefined,
+			returnDate: undefined,
+		});
 	};
 
 	const removeFilter = (key: ActiveFilterKey) => {
 		if (key === "origin") {
 			form.value.origin = undefined;
-			appliedFilters.value.origin = undefined;
 			originSearchTerm.value = "";
+			updateQuery({
+				origin: undefined,
+			});
 			return;
 		}
 
 		if (key === "destination") {
 			form.value.destination = undefined;
-			appliedFilters.value.destination = undefined;
 			destinationSearchTerm.value = "";
+			updateQuery({
+				destination: undefined,
+			});
 			return;
 		}
 
 		if (key === "departureDate") {
-			appliedFilters.value.departureDate = "";
-			departureDateValue.value = undefined;
+			updateQuery({
+				departureDate: undefined,
+			});
 			return;
 		}
 
-		appliedFilters.value.returnDate = "";
-		returnDateValue.value = undefined;
+		updateQuery({
+			returnDate: undefined,
+		});
 	};
 
 	return {
