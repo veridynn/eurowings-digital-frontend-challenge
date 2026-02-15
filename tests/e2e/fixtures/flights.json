@@ -9,8 +9,7 @@
 		"price": {
 			"amount": 120,
 			"currency": "EUR"
-		},
-		"offerType": "ROUNDTRIP"
+		}
 	},
 	{
 		"uuid": "e2e-flight-2",
@@ -22,8 +21,7 @@
 		"price": {
 			"amount": 80,
 			"currency": "EUR"
-		},
-		"offerType": "ROUNDTRIP"
+		}
 	},
 	{
 		"uuid": "e2e-flight-3",
@@ -35,8 +33,7 @@
 		"price": {
 			"amount": 200,
 			"currency": "EUR"
-		},
-		"offerType": "ROUNDTRIP"
+		}
 	},
 	{
 		"uuid": "e2e-flight-4",
@@ -48,7 +45,6 @@
 		"price": {
 			"amount": 60,
 			"currency": "EUR"
-		},
-		"offerType": "ROUNDTRIP"
+		}
 	}
 ]

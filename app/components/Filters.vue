@@ -38,36 +38,6 @@ const commitDestinationFromInput = () => {
 	destinationSearchTerm.value = value;
 };
 
-onMounted(() => {
-	(window as Window & { __E2E_FILTER_HOOK_READY?: boolean }).__E2E_FILTER_HOOK_READY =
-		true;
-
-	const handleE2eSetFilters = (
-		event: CustomEvent<{ origin?: string; destination?: string }>,
-	) => {
-		if (event.detail.origin !== undefined) {
-			form.value.origin = event.detail.origin || undefined;
-		}
-
-		if (event.detail.destination !== undefined) {
-			form.value.destination = event.detail.destination || undefined;
-		}
-	};
-
-	window.addEventListener(
-		"e2e:set-filters",
-		handleE2eSetFilters as EventListener,
-	);
-
-	onBeforeUnmount(() => {
-		window.removeEventListener(
-			"e2e:set-filters",
-			handleE2eSetFilters as EventListener,
-		);
-		delete (window as Window & { __E2E_FILTER_HOOK_READY?: boolean })
-			.__E2E_FILTER_HOOK_READY;
-	});
-});
 </script>
 
 <template>

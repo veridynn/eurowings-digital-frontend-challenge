@@ -6,12 +6,10 @@ export default defineConfig({
 		baseURL: "http://localhost:3000",
 	},
 	webServer: {
-		command: "bun run dev -- --port 3000",
+		command:
+			"cp tests/e2e/fixtures/flights.json data/flights.json && bun run dev -- --port 3000",
 		url: "http://localhost:3000",
 		reuseExistingServer: false,
-		env: {
-			E2E_FLIGHTS_FIXTURE_PATH: "tests/e2e/fixtures/flights.json",
-		},
 	},
 	projects: [
 		{
