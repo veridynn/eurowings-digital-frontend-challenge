@@ -10,6 +10,8 @@ export default defineVitestConfig({
 		coverage: {
 			provider: "v8",
 			reporter: ["text", "html"],
+			include: ["app/**/*.{ts,vue}"],
+			exclude: ["app/types/**"],
 		},
 	},
 });
