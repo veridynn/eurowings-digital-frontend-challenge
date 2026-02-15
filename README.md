@@ -12,7 +12,18 @@ display flights with client-side filtering.
 
 ## 🧠 Approach
 
-🚧 WIP 🚧
+This challenge was used as an opportunity to explore newer tools in a practical
+context while still delivering a complete solution. To support that, `Nuxt 4`
+was selected to explore the latest Nuxt ecosystem in a real implementation.
+With `Nuxt UI 4`, the focus stayed on functionality rather than building UI
+primitives from scratch. `Tailwind CSS 4` complemented that setup by adding
+hands-on experience with a widely adopted styling approach. Some design freedom
+was also taken due to personal direction and the constraints of component-driven
+UI, since reproducing a PDF reference 1:1 was not the main objective. For state
+management, `Pinia` was intentionally skipped in favor of shareable URL-based
+state, which fits filter-driven flows well. The interface was built mobile-first
+and only expanded with breakpoints where they added clear value, while fluid
+Flexbox layouts kept the UI responsive without brittle breakpoint-heavy CSS.
 
 ## 📋 Challenge Checklist
 
