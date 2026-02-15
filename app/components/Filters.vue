@@ -23,6 +23,47 @@ const inputDateUi = {
 	segment:
 		"text-old-neutral-900 data-placeholder:text-old-neutral-700 dark:data-placeholder:text-old-neutral-200",
 };
+
+const commitOriginFromInput = () => {
+	const value = originSearchTerm.value.trim();
+	form.value.origin = value || undefined;
+};
+
+const commitDestinationFromInput = () => {
+	const value = destinationSearchTerm.value.trim();
+	form.value.destination = value || undefined;
+};
+
+onMounted(() => {
+	(window as Window & { __E2E_FILTER_HOOK_READY?: boolean }).__E2E_FILTER_HOOK_READY =
+		true;
+
+	const handleE2eSetFilters = (
+		event: CustomEvent<{ origin?: string; destination?: string }>,
+	) => {
+		if (event.detail.origin !== undefined) {
+			form.value.origin = event.detail.origin || undefined;
+		}
+
+		if (event.detail.destination !== undefined) {
+			form.value.destination = event.detail.destination || undefined;
+		}
+	};
+
+	window.addEventListener(
+		"e2e:set-filters",
+		handleE2eSetFilters as EventListener,
+	);
+
+	onBeforeUnmount(() => {
+		window.removeEventListener(
+			"e2e:set-filters",
+			handleE2eSetFilters as EventListener,
+		);
+		delete (window as Window & { __E2E_FILTER_HOOK_READY?: boolean })
+			.__E2E_FILTER_HOOK_READY;
+	});
+});
 </script>
 
 <template>
@@ -37,6 +78,7 @@ const inputDateUi = {
 							id="filter-origin"
 							v-model="form.origin"
 							v-model:search-term="originSearchTerm"
+							@update:search-term="form.origin = $event || undefined"
 							:items="airports"
 							placeholder="Departure airport"
 							size="xl"
@@ -45,6 +87,9 @@ const inputDateUi = {
 							:ui="{ trailingIcon: 'hidden' }"
 							autocomplete="on"
 							open-on-focus
+							open-on-click
+							create-item
+							@blur="commitOriginFromInput"
 							clear
 							class="w-full"
 						/>
@@ -55,6 +100,7 @@ const inputDateUi = {
 							id="filter-destination"
 							v-model="form.destination"
 							v-model:search-term="destinationSearchTerm"
+							@update:search-term="form.destination = $event || undefined"
 							:items="airports"
 							placeholder="Destination airport"
 							size="xl"
@@ -63,6 +109,9 @@ const inputDateUi = {
 							:ui="{ trailingIcon: 'hidden' }"
 							autocomplete="on"
 							open-on-focus
+							open-on-click
+							create-item
+							@blur="commitDestinationFromInput"
 							clear
 							class="w-full"
 						/>

@@ -25,7 +25,7 @@ display flights with client-side filtering.
 - [x] Add basic automated tests for filtering logic and main component rendering
   - [x] Unit tests to validate core functionality and filtering logic
   - [x] Component tests to smoke-test basic rendering and key UI states
-  - [ ] End-to-end tests to verify the main user journey from data load to filtering results
+  - [x] End-to-end tests to verify the main user journey from data load to filtering results
 
 ## 🧰 Tech Stack
 
@@ -109,6 +109,24 @@ Run tests with coverage:
 
 ```bash
 bun run test:coverage
+```
+
+Run end-to-end tests:
+
+```bash
+bun run test:e2e
+```
+
+Run end-to-end tests with Playwright UI mode:
+
+```bash
+bun run test:e2e:ui
+```
+
+Run end-to-end tests in headed mode:
+
+```bash
+bun run test:e2e:headed
 ```
 
 ### Mock data
