@@ -4,6 +4,10 @@ This repository is structured as a working coding challenge submission and
 demonstrates a small web application that consumes a mocked Flights API to
 display flights with client-side filtering.
 
+## 🧠 Approach
+
+🚧 WIP 🚧
+
 ## 📋 Challenge Checklist
 
 - [x] Create a simple mock HTTP endpoint returning static Flights JSON data
@@ -15,7 +19,7 @@ display flights with client-side filtering.
   - [x] Design a responsive layout from mobile screens up
   - [x] Show loading and error states while fetching data
 - [x] Implement client-side filtering by origin, destination, departureDate,
-  and returnDate
+      and returnDate
   - [x] Add filter inputs for origin, destination, departure date, and return date
   - [x] Implement client-side filtering
   - [x] Show active filters
@@ -25,11 +29,16 @@ display flights with client-side filtering.
 - [x] Add basic automated tests for filtering logic and main component rendering
   - [x] Unit tests to validate core functionality and filtering logic
   - [x] Component tests to smoke-test basic rendering and key UI states
-  - [x] End-to-end tests to verify the main user journey from data load to filtering results
+  - [x] End-to-end tests to verify the main user journey from data load to
+        filtering results
+
+## ✨ Extras
+
+🚧 WIP 🚧
 
 ## 🧰 Tech Stack
 
-![vue-ts-nuxtjs-vite-nodejs-bun][tech-stack-icons]
+![vue-ts-nuxtjs-vite-nodejs-bun-tailwind-vitest-playwright][tech-stack-icons]
 
 - `Vue 3`
 - `TypeScript`
@@ -140,5 +149,5 @@ bun run mockdata:flights
 > [!Note]
 > This writes JSON to `data/flights.json`, which is returned by `GET /api/flights`.
 
-[tech-stack-icons]: https://skillicons.dev/icons?i=vue,ts,nuxtjs,vite,nodejs,bun
+[tech-stack-icons]: https://go-skill-icons.vercel.app/api/icons?i=vue,ts,nuxtjs,vite,nodejs,bun,tailwind,vitest,playwright
 [eurowings-digital-logo]: https://eurowings-digital.de/ewd-logo-small.svg
