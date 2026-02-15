@@ -142,12 +142,6 @@ Run end-to-end tests with Playwright UI mode:
 bun run test:e2e:ui
 ```
 
-Run end-to-end tests in headed mode:
-
-```bash
-bun run test:e2e:headed
-```
-
 ### Mock data
 
 Generate 50 mock Flight records using [Faker](https://fakerjs.dev/):
