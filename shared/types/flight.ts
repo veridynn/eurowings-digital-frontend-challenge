@@ -6,8 +6,7 @@ export type Flight = {
 	seatAvailability: number;
 	price: {
 		amount: number;
-		currency: "EUR";
+		currency: string;
 	};
-	offerType: string;
 	uuid: string;
 };

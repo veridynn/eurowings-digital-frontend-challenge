@@ -12,7 +12,6 @@ export const testFlights: Flight[] = [
 			amount: 89,
 			currency: "EUR",
 		},
-		offerType: "ROUNDTRIP",
 	},
 	{
 		uuid: "flight-b",
@@ -25,7 +24,6 @@ export const testFlights: Flight[] = [
 			amount: 89,
 			currency: "EUR",
 		},
-		offerType: "ROUNDTRIP",
 	},
 	{
 		uuid: "flight-c",
@@ -38,7 +36,6 @@ export const testFlights: Flight[] = [
 			amount: 129.99,
 			currency: "EUR",
 		},
-		offerType: "ROUNDTRIP",
 	},
 	{
 		uuid: "flight-d",
@@ -51,6 +48,5 @@ export const testFlights: Flight[] = [
 			amount: 249,
 			currency: "EUR",
 		},
-		offerType: "ROUNDTRIP",
 	},
 ];
