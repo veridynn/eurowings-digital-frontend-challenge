@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { nextTick } from "vue";
+
 const {
 	form,
 	originSearchTerm,
@@ -20,9 +22,11 @@ const inputDateUi = {
 		"text-old-neutral-900 data-placeholder:text-old-neutral-700 dark:data-placeholder:text-old-neutral-200",
 };
 
+const toUppercase = (value = "") => value.trim().toUpperCase();
+
 const commitOriginFromInput = () => {
-	const selectedValue = form.value.origin?.trim() ?? "";
-	const searchValue = originSearchTerm.value.trim();
+	const selectedValue = toUppercase(form.value.origin);
+	const searchValue = toUppercase(originSearchTerm.value);
 	const value = selectedValue || searchValue;
 
 	form.value.origin = value || undefined;
@@ -30,19 +34,30 @@ const commitOriginFromInput = () => {
 };
 
 const commitDestinationFromInput = () => {
-	const selectedValue = form.value.destination?.trim() ?? "";
-	const searchValue = destinationSearchTerm.value.trim();
+	const selectedValue = toUppercase(form.value.destination);
+	const searchValue = toUppercase(destinationSearchTerm.value);
 	const value = selectedValue || searchValue;
 
 	form.value.destination = value || undefined;
 	destinationSearchTerm.value = value;
 };
 
+const onSubmit = () => {
+	commitOriginFromInput();
+	commitDestinationFromInput();
+	applyFilters();
+};
+
+const onDateEnter = async () => {
+	await nextTick();
+	onSubmit();
+};
+
 </script>
 
 <template>
-	<UCard>
-		<form class="space-y-4" @submit.prevent="applyFilters">
+		<UCard>
+			<form class="space-y-4" @submit.prevent="onSubmit">
 			<fieldset class="space-y-4">
 				<legend class="sr-only">Flight search filters</legend>
 
@@ -103,6 +118,7 @@ const commitDestinationFromInput = () => {
 							color="primary"
 							:ui="inputDateUi"
 							class="w-full"
+							@keydown.enter="onDateEnter"
 						>
 							<template #leading>
 								<UPopover v-model:open="departureCalendarOpen">
@@ -119,6 +135,7 @@ const commitDestinationFromInput = () => {
 										<UCalendar
 											v-model="departureDateValue"
 											@update:model-value="departureCalendarOpen = false"
+											@keydown.enter="onDateEnter"
 											:min-value="todayDate"
 											:max-value="departureMaxDate"
 											class="p-2"
@@ -141,6 +158,7 @@ const commitDestinationFromInput = () => {
 							color="primary"
 							:ui="inputDateUi"
 							class="w-full"
+							@keydown.enter="onDateEnter"
 						>
 							<template #leading>
 								<UPopover v-model:open="returnCalendarOpen">
@@ -157,6 +175,7 @@ const commitDestinationFromInput = () => {
 										<UCalendar
 											v-model="returnDateValue"
 											@update:model-value="returnCalendarOpen = false"
+											@keydown.enter="onDateEnter"
 											:min-value="returnMinDate"
 											:max-value="returnMaxDate"
 											class="p-2"
