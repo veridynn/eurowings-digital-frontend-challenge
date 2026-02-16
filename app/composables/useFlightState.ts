@@ -129,7 +129,7 @@ const formatDateShort = (dateValue: string) => {
 		return dateValue;
 	}
 
-	return new Intl.DateTimeFormat("de-DE", {
+	return new Intl.DateTimeFormat("en-GB", {
 		month: "short",
 		day: "2-digit",
 		timeZone: "UTC",

@@ -70,7 +70,7 @@ const sortedFlights = computed(() => {
 const formatDateShort = (dateValue: string) => {
 	const date = parseDate(dateValue).toDate("UTC");
 
-	return new Intl.DateTimeFormat("de-DE", {
+	return new Intl.DateTimeFormat("en-GB", {
 		month: "short",
 		day: "2-digit",
 		timeZone: "UTC",
