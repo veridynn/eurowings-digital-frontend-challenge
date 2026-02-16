@@ -15,10 +15,17 @@ export default defineNuxtConfig({
 	},
 	app: {
 		head: {
-			title: "Fligthly",
+			title: "Flightly",
 			htmlAttrs: {
 				lang: "en",
 			},
+			meta: [
+				{
+					name: "description",
+					content:
+						"Browse and filter flight offers by origin, destination, and travel dates with Flightly.",
+				},
+			],
 			link: [{ rel: "icon", type: "image/svg+xml", href: "/favicon.svg" }],
 		},
 	},
