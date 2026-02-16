@@ -10,7 +10,7 @@
 	/*--color-magenta: oklch(from var(--magenta) l c h);*/
 	--color-magenta: oklch(0.506244 0.192337 1.211);
 	/*--color-magenta-dark: oklch(from var(--magenta) calc(l - 0.1) c h);*/
-	--color-magenta-dark: oklch(0.106244 0.192337 1.211);
+	--color-magenta-dark: oklch(0.406244 0.192337 1.211);
 	--color-primary: var(--color-magenta);
 
 	/* NOTE: error animation */
