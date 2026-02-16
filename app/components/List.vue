@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { parseDate } from "@internationalized/date";
 import type { FlightSortKey } from "~/types/flight-state";
 
 const props = defineProps<{
@@ -67,23 +68,27 @@ const sortedFlights = computed(() => {
 });
 
 const formatDateShort = (dateValue: string) => {
-	const date = new Date(dateValue);
+	const date = parseDate(dateValue).toDate("UTC");
 
 	return new Intl.DateTimeFormat("de-DE", {
 		month: "short",
 		day: "2-digit",
+		timeZone: "UTC",
 	}).format(date);
 };
 
 const getDurationInDays = (departureDate: string, returnDate: string) => {
-	const departure = new Date(departureDate);
-	const returning = new Date(returnDate);
+	const departure = parseDate(departureDate);
+	const returning = parseDate(returnDate);
+	const departureUtc = Date.UTC(
+		departure.year,
+		departure.month - 1,
+		departure.day,
+	);
+	const returnUtc = Date.UTC(returning.year, returning.month - 1, returning.day);
 	const msPerDay = 1000 * 60 * 60 * 24;
 
-	return Math.max(
-		1,
-		Math.round((returning.getTime() - departure.getTime()) / msPerDay),
-	);
+	return Math.max(1, Math.round((returnUtc - departureUtc) / msPerDay));
 };
 
 const formatPrice = (amount: number, currency: string) =>

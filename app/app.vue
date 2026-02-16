@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { de } from "@nuxt/ui/locale";
+
 const {
 	data: flights,
 	pending,
@@ -11,7 +13,7 @@ useFlightState(flights);
 </script>
 
 <template>
-	<UApp>
+	<UApp :locale="de">
 		<Header />
 		<UMain class="bg-old-neutral-50">
 			<UContainer class="pt-6">

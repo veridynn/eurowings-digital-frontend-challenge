@@ -123,12 +123,17 @@ const isDateOutsideBounds = (
 };
 
 const formatDateShort = (dateValue: string) => {
-	const date = new Date(dateValue);
+	const date = parseIsoDate(dateValue);
+
+	if (!date) {
+		return dateValue;
+	}
 
 	return new Intl.DateTimeFormat("de-DE", {
 		month: "short",
 		day: "2-digit",
-	}).format(date);
+		timeZone: "UTC",
+	}).format(date.toDate("UTC"));
 };
 
 const managedQueryKeys = [
