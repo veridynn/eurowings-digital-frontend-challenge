@@ -12,7 +12,7 @@ test("main journey: load -> filter -> reset -> sort", async ({ page, request }) 
 	const flightRows = page.locator("ul.space-y-4 > li");
 	const sortSelect = page.getByRole("combobox", { name: "Sort flights" });
 
-	await expect(page.getByText("Fligthly")).toBeVisible();
+	await expect(page.getByText("Flightly")).toBeVisible();
 	const initialFlightCount = await flightRows.count();
 	expect(initialFlightCount).toBe(4);
 

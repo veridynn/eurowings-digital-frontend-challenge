@@ -17,6 +17,6 @@ describe("Header.vue", () => {
 			},
 		});
 
-		expect(wrapper.text()).toContain("Fligthly");
+		expect(wrapper.text()).toContain("Flightly");
 	});
 });
