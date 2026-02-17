@@ -16,10 +16,10 @@ This solution uses `Nuxt 4`, `Nuxt UI 4`, and `Tailwind CSS 4` to deliver a
 complete challenge implementation while staying focused on functionality over
 custom UI primitives. The stack was chosen deliberately to explore and learn
 modern tools through practical, production-like usage. Filter state is
-URL-driven (instead of `Pinia`) to keep results shareable and persistent. The
-interface is built mobile-first with fluid `Flexbox` layouts and only uses
-breakpoints where they clearly improve usability. Some design freedom was
-intentionally taken rather than reproducing the PDF reference 1:1.
+URL-driven to keep results shareable and persistent. The interface is built
+mobile-first with fluid `Flexbox` layouts and only uses breakpoints where they
+clearly improve usability. Some design freedom was intentionally taken rather
+than reproducing the PDF reference 1:1.
 
 ## 📋 Challenge Checklist
 
